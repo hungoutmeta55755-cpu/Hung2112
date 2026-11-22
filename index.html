@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Văn Đàn (Truyện Việt) — Nền Tảng Đọc &amp; Sáng Tác Truyện Trực Tuyến</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8f7f4;
+      --surface: #ffffff;
+      --surface-2: #f1efe9;
+      --text: #1c1917;
+      --muted: #57534e;
+      --border: #e7e5e4;
+      --accent: #b45309;
+      --accent-hover: #92400e;
+      --accent-soft: #fef3c7;
+      --danger: #dc2626;
+      --success: #15803d;
+      --shadow: 0 8px 24px -6px rgba(28, 25, 23, 0.08), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
+      --radius: 14px;
+    }
+    body.dark-mode {
+      --bg: #121110;
+      --surface: #1c1a18;
+      --surface-2: #262320;
+      --text: #f5f5f4;
+      --muted: #a8a29e;
+      --border: #2e2a26;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-soft: rgba(245, 158, 11, 0.14);
+      --danger: #f87171;
+      --success: #4ade80;
+      --shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font-family: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+
+    /* Progress bar */
+    #read-progress-wrap {
+      position: fixed; top: 0; left: 0; width: 100%; height: 3.5px;
+      background: transparent; z-index: 1000; display: none;
+    }
+    #read-progress-bar {
+      height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #ea580c);
+      transition: width 0.08s linear;
+    }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1240px; margin: 0 auto; padding: 0.75rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #b45309, #ea580c);
+      color: #fff; display: grid; place-items: center; font-weight: 800;
+      box-shadow: 0 4px 12px rgba(180, 83, 9, 0.28);
+    }
+    .nav-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.52rem 0.95rem; border-radius: 10px; font-weight: 600; font-size: 0.88rem;
+      transition: all 0.18s ease; white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 0.36rem 0.7rem; font-size: 0.8rem; border-radius: 8px; }
+
+    /* User dropdown */
+    .user-menu-wrap { position: relative; }
+    .avatar-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.28rem 0.65rem 0.28rem 0.32rem; border-radius: 999px;
+      background: var(--surface-2); border: 1px solid var(--border); font-weight: 600; font-size: 0.85rem;
+    }
+    .avatar-circle {
+      width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+      color: #fff; font-weight: 700; font-size: 0.82rem; flex-shrink: 0;
+    }
+    .dropdown-menu {
+      position: absolute; right: 0; top: calc(100% + 0.45rem); width: 220px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow); padding: 0.4rem; display: none; z-index: 300;
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-item {
+      width: 100%; text-align: left; padding: 0.55rem 0.75rem; border-radius: 8px;
+      font-size: 0.86rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .dropdown-item:hover { background: var(--surface-2); color: var(--accent); }
+
+    /* Container */
+    main { max-width: 1240px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; min-height: 75vh; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #291d14 0%, #4a2c14 55%, #7c2d12 100%);
+      color: #fff; border-radius: 20px; padding: 2rem; margin-bottom: 1.75rem;
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; align-items: center;
+      box-shadow: var(--shadow);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(251, 191, 36, 0.18); border: 1px solid rgba(251, 191, 36, 0.45);
+      color: #fde68a; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .hero h1 { font-size: clamp(1.45rem, 3vw, 2.15rem); line-height: 1.25; margin-bottom: 0.65rem; }
+    .hero p { color: #e7e5e4; font-size: 0.94rem; margin-bottom: 1.1rem; max-width: 58ch; }
+    .hero-card {
+      background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 16px; padding: 1.25rem; backdrop-filter: blur(8px);
+    }
+
+    /* Filter bar */
+    .filter-panel {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow);
+      display: grid; grid-template-columns: 2fr repeat(3, 1fr) auto; gap: 0.75rem; align-items: center;
+    }
+    .input-control, .select-control, .textarea-control {
+      width: 100%; padding: 0.58rem 0.8rem; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      font-size: 0.88rem; outline: none; transition: border-color 0.15s;
+    }
+    .input-control:focus, .select-control:focus, .textarea-control:focus { border-color: var(--accent); }
+
+    /* Layout grid with Top 5 */
+    .home-grid { display: grid; grid-template-columns: 1fr 310px; gap: 1.5rem; align-items: start; }
+    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 1.15rem; }
+
+    .story-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .story-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .cover-box {
+      position: relative; height: 165px; display: flex; align-items: flex-end; padding: 0.85rem;
+      color: #fff; background-size: cover; background-position: center;
+    }
+    .cover-box::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, 0.78) 100%);
+    }
+    .cover-content { position: relative; z-index: 1; width: 100%; }
+    .bookmark-quick {
+      position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(20, 18, 16, 0.65); color: #fff; display: grid; place-items: center;
+      font-size: 0.9rem; transition: background 0.15s, transform 0.15s;
+    }
+    .bookmark-quick.active { background: var(--accent); color: #fff; }
+    .bookmark-quick:hover { transform: scale(1.08); }
+    .pill {
+      display: inline-block; padding: 0.18rem 0.55rem; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 700; background: var(--accent-soft); color: var(--accent);
+    }
+    .pill-status { background: rgba(21, 128, 61, 0.14); color: var(--success); }
+    .pill-ongoing { background: rgba(180, 83, 9, 0.14); color: var(--accent); }
+
+    .card-body { padding: 0.9rem; flex: 1; display: flex; flex-direction: column; gap: 0.45rem; }
+    .card-title { font-weight: 700; font-size: 1rem; line-height: 1.35; cursor: pointer; }
+    .card-title:hover { color: var(--accent); }
+    .card-meta { font-size: 0.8rem; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; }
+    .card-desc { font-size: 0.83rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-foot {
+      margin-top: auto; padding-top: 0.65rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--muted);
+    }
+
+    /* Sidebar ranking */
+    .panel {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.1rem; box-shadow: var(--shadow);
+    }
+    .panel-title { font-weight: 800; font-size: 1rem; margin-bottom: 0.85rem; display: flex; align-items: center; justify-content: space-between; }
+    .rank-item {
+      display: flex; gap: 0.7rem; align-items: center; padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+    }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-num {
+      width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
+      font-weight: 800; font-size: 0.78rem; background: var(--surface-2); flex-shrink: 0;
+    }
+    .rank-1 { background: #fef08a; color: #854d0e; }
+    .rank-2 { background: #e2e8f0; color: #334155; }
+    .rank-3 { background: #fed7aa; color: #9a3412; }
+
+    /* Detail & Reader */
+    .detail-header {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+      padding: 1.5rem; box-shadow: var(--shadow); display: grid; grid-template-columns: 210px 1fr; gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .detail-cover {
+      height: 280px; border-radius: 14px; display: flex; align-items: flex-end; padding: 1rem;
+      color: #fff; font-weight: 700; position: relative; overflow: hidden; background-size: cover; background-position: center;
+    }
+    .detail-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.75) 100%); }
+    .detail-cover span { position: relative; z-index: 1; }
+    .stats-row { display: flex; flex-wrap: wrap; gap: 0.65rem; margin: 0.85rem 0; }
+    .stat-box { background: var(--surface-2); border: 1px solid var(--border); padding: 0.45rem 0.75rem; border-radius: 10px; font-size: 0.82rem; }
+
+    .chapter-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem; margin-top: 0.8rem; }
+    .chapter-btn {
+      padding: 0.65rem 0.85rem; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--surface-2); text-align: left; font-size: 0.86rem;
+      display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+    }
+    .chapter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .chapter-btn.read { opacity: 0.78; }
+
+    /* Reader */
+    .reader-toolbar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 0.65rem; box-shadow: var(--shadow);
+    }
+    .reader-paper {
+      border-radius: 18px; padding: clamp(1.25rem, 4vw, 3rem); border: 1px solid var(--border);
+      box-shadow: var(--shadow); max-width: 820px; margin: 0 auto;
+    }
+    .reader-bg-white { background: #ffffff; color: #1c1917; }
+    .reader-bg-sepia { background: #f5ecd7; color: #3b2f1e; }
+    .reader-bg-dark { background: #181716; color: #e7e5e4; }
+    .reader-content p { margin-bottom: 1.15em; text-align: justify; }
+
+    /* Tabs & Studio */
+    .tabs { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.65rem; }
+    .tab-btn { padding: 0.48rem 0.9rem; border-radius: 10px; font-weight: 600; font-size: 0.88rem; background: var(--surface-2); }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
+    .full-col { grid-column: 1 / -1; }
+    label { display: block; font-size: 0.83rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--muted); }
+
+    /* Toast & Modal */
+    #toast-container { position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 2000; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast {
+      background: #1c1917; color: #fff; padding: 0.7rem 1rem; border-radius: 10px;
+      font-size: 0.86rem; font-weight: 500; box-shadow: var(--shadow); border-left: 4px solid var(--accent);
+      animation: slideIn 0.2s ease;
+    }
+    @keyframes slideIn { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(4px);
+      z-index: 1500; display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+      width: 100%; max-width: 480px; padding: 1.4rem; box-shadow: var(--shadow); max-height: 90vh; overflow-y: auto;
+    }
+
+    footer {
+      border-top: 1px solid var(--border); background: var(--surface);
+      padding: 1.5rem 1.25rem; text-align: center; font-size: 0.84rem; color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .hero, .home-grid, .detail-header { grid-template-columns: 1fr; }
+      .filter-panel { grid-template-columns: 1fr 1fr; }
+      .filter-panel .search-wrap { grid-column: 1 / -1; }
+    }
+    @media (max-width: 600px) {
+      .form-grid, .filter-panel { grid-template-columns: 1fr; }
+      .btn { padding: 0.45rem 0.72rem; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="read-progress-wrap"><div id="read-progress-bar"></div></div>
+
+  <header>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <a href="#/" class="brand" onclick="navigate('home'); return false;">
+          <span class="brand-mark">VĐ</span>
+          <span>Văn Đàn</span>
+        </a>
+        <nav class="nav-actions">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('home')">Khám phá</button>
+          <button class="btn btn-primary btn-sm" onclick="openPublishModal()">+ Đăng truyện</button>
+        </nav>
+      </div>
+
+      <div class="nav-actions" id="auth-area"></div>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <button id="back-to-top" title="Lên đầu trang" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    style="position:fixed;bottom:1.25rem;left:1.25rem;z-index:900;display:none;width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;box-shadow:var(--shadow);font-weight:700;">↑</button>
+
+  <footer>
+    <strong>Văn Đàn (Truyện Việt)</strong> — Không gian đọc và sáng tác truyện trực tuyến · Lưu trữ dữ liệu cục bộ an toàn.
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <!-- Auth Modal -->
+  <div class="modal-backdrop" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h2 id="auth-modal-title" style="font-size:1.15rem;">Đăng nhập / Đăng ký</h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('auth-modal')">✕</button>
+      </div>
+
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+        <button id="tab-login" class="btn btn-primary btn-sm" style="flex:1" onclick="switchAuthTab('login')">Đăng nhập</button>
+        <button id="tab-register" class="btn btn-ghost btn-sm" style="flex:1" onclick="switchAuthTab('register')">Đăng ký</button>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div style="margin-bottom:0.75rem;">
+          <label>Tên đăng nhập hoặc Email</label>
+          <input type="text" id="login-identifier" class="input-control" required placeholder="vd: docgia@vandan.vn" />
+        </div>
+        <div style="margin-bottom:1rem;">
+          <label>Mật khẩu</label>
+          <input type="password" id="login-password" class="input-control" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-bottom:0.65rem;">Đăng nhập</button>
+      </form>
+
+      <form id="register-form" style="display:none" onsubmit="handleRegister(event)">
+        <div style="margin-bottom:0.75rem;">
+          <label>Bút danh / Tên hiển thị</label>
+          <input type="text" id="reg-name" class="input-control" required placeholder="vd: Minh Nguyệt" />
+        </div>
+        <div style="margin-bottom:0.75rem;">
+          <label>Email</label>
+          <input type="email" id="reg-email" class="input-control" required placeholder="ban@example.com" />
+        </div>
+        <div style="margin-bottom:1rem;">
+          <label>Mật khẩu (tối thiểu 4 ký tự)</label>
+          <input type="password" id="reg-password" class="input-control" required minlength="4" placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Tạo tài khoản</button>
+      </form>
+
+      <div style="margin-top:1rem;padding-top:0.85rem;border-top:1px solid var(--border);">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Trải nghiệm nhanh 1 chạm:</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="quickDemoLogin('reader')">Độc giả mẫu</button>
+          <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="quickDemoLogin('author')">Tác giả mẫu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publish / Edit Story Modal -->
+  <div class="modal-backdrop" id="story-modal" role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width:600px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h2 id="story-modal-title" style="font-size:1.15rem;">Đăng truyện mới</h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('story-modal')">✕</button>
+      </div>
+      <form id="story-form" onsubmit="handleSaveStory(event)">
+        <input type="hidden" id="edit-story-id" />
+        <div class="form-grid">
+          <div class="full-col">
+            <label>Tên tác phẩm *</label>
+            <input type="text" id="story-title" class="input-control" required placeholder="Nhập tên truyện..." />
+          </div>
+          <div>
+            <label>Thể loại</label>
+            <select id="story-genre" class="select-control">
+              <option>Tiên Hiệp</option>
+              <option>Ngôn Tình</option>
+              <option>Trinh Thám</option>
+              <option>Kinh Dị</option>
+              <option>Khoa Huyễn</option>
+              <option>Đời Thường</option>
+            </select>
+          </div>
+          <div>
+            <label>Trạng thái</label>
+            <select id="story-status" class="select-control">
+              <option value="Đang ra">Đang ra</option>
+              <option value="Hoàn thành">Hoàn thành</option>
+            </select>
+          </div>
+          <div>
+            <label>Màu bìa mặc định</label>
+            <select id="story-gradient" class="select-control">
+              <option value="linear-gradient(135deg,#1e3a8a,#4338ca)">Xanh Lam Hoàng Gia</option>
+              <option value="linear-gradient(135deg,#9f1239,#e11d48)">Đỏ Hồng Thâm Trầm</option>
+              <option value="linear-gradient(135deg,#065f46,#0d9488)">Ngọc Lục Bảo</option>
+              <option value="linear-gradient(135deg,#78350f,#d97706)">Hổ Phách Ấm Áp</option>
+              <option value="linear-gradient(135deg,#312e81,#7e22ce)">Tím Huyền Bí</option>
+            </select>
+          </div>
+          <div>
+            <label>Tải ảnh bìa (tự động nén)</label>
+            <input type="file" id="story-cover-file" accept="image/*" class="input-control" onchange="handleCoverUpload(event)" />
+            <input type="hidden" id="story-cover-data" />
+          </div>
+          <div class="full-col">
+            <label>Giới thiệu ngắn *</label>
+            <textarea id="story-desc" rows="3" class="textarea-control" required placeholder="Tóm tắt nội dung hoặc lời tựa..."></textarea>
+          </div>
+          <div class="full-col" id="first-chapter-group">
+            <label>Chương 1 — Nội dung mở đầu *</label>
+            <input type="text" id="first-chapter-title" class="input-control" style="margin-bottom:0.45rem;" placeholder="Tiêu đề chương 1 (vd: Chương 1: Khởi đầu)" />
+            <textarea id="first-chapter-content" rows="5" class="textarea-control" placeholder="Viết nội dung chương đầu tiên..."></textarea>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.6rem;margin-top:1.1rem;">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('story-modal')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu tác phẩm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Chapter Editor Modal -->
+  <div class="modal-backdrop" id="chapter-modal" role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width:640px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h2 id="chapter-modal-title" style="font-size:1.15rem;">Soạn chương</h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('chapter-modal')">✕</button>
+      </div>
+      <form id="chapter-form" onsubmit="handleSaveChapter(event)">
+        <input type="hidden" id="chap-story-id" />
+        <input type="hidden" id="chap-index" />
+        <div style="margin-bottom:0.75rem;">
+          <label>Tên chương *</label>
+          <input type="text" id="chap-title" class="input-control" required placeholder="vd: Chương 2: Bước ngoặt" />
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+            <label style="margin:0;">Nội dung chương *</label>
+            <span id="chap-word-count" style="font-size:0.78rem;color:var(--muted);">0 từ</span>
+          </div>
+          <textarea id="chap-content" rows="10" class="textarea-control" required oninput="updateWordCounter()" placeholder="Nhập nội dung chương..."></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.6rem;margin-top:1rem;">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('chapter-modal')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Xuất bản chương</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      stories: 'vandan_stories_v2',
+      users: 'vandan_users_v2',
+      session: 'vandan_session_v2',
+      prefs: 'vandan_prefs_v2'
+    };
+
+    const DEFAULT_USERS = [
+      { id: 'u_reader', name: 'Lan Phương (Độc giả)', email: 'docgia@vandan.vn', password: '123', role: 'reader', color: '#0d9488', favorites: ['s1'], history: {}, bookmarks: [] },
+      { id: 'u_author', name: 'Hoàng Nam', email: 'tacgia@vandan.vn', password: '123', role: 'author', color: '#b45309', favorites: ['s3'], history: {}, bookmarks: [] }
+    ];
+
+    const DEFAULT_STORIES = [
+      {
+        id: 's1',
+        title: 'Mây Trôi Qua Phố Cổ',
+        author: 'Hoàng Nam',
+        authorId: 'u_author',
+        genre: 'Đời Thường',
+        status: 'Đang ra',
+        gradient: 'linear-gradient(135deg,#78350f,#d97706)',
+        coverData: '',
+        description: 'Một tiệm sửa đồng hồ nhỏ nằm sâu trong con ngõ rợp bóng me già nơi phố cổ, lưu giữ những kỷ niệm chưa kịp gọi tên.',
+        views: 1420,
+        ratings: [5, 5, 4, 5],
+        comments: [
+          { id: 'c1', userName: 'Lan Phương (Độc giả)', userColor: '#0d9488', text: 'Văn phong nhẹ nhàng, đọc buổi tối rất thư giãn.', likes: 3, createdAt: 'Hôm qua' }
+        ],
+        chapters: [
+          { title: 'Chương 1: Chiếc đồng hồ quả lắc ngừng chạy', content: 'Cơn mưa đầu hạ đổ xuống mái ngói rêu phong của khu phố cổ.\n\nMinh ngồi bên bàn làm việc, lặng lẽ ngắm chiếc đồng hồ quả lắc đã đứng im suốt mười năm. Chủ nhân của nó gửi lại trước khi lên đường phương xa, dặn chỉ khi nào lòng người thực sự bình yên mới đánh thức kim giây.' },
+          { title: 'Chương 2: Khách quen lúc chạng vạng', content: 'Ánh đèn vàng hắt ra từ ô cửa nhỏ soi rõ từng giọt nước lăn dài trên bậc thềm.\n\nMột cô gái trẻ bước vào, trên tay cầm chiếc đồng hồ bỏ túi bằng bạc cũ kỹ. Cô mỉm cười nhẹ: "Chú ơi, chiếc này có thể chạy lại không ạ?"' }
+        ]
+      },
+      {
+        id: 's2',
+        title: 'Lục Địa Tàn Ảnh',
+        author: 'Hoàng Nam',
+        authorId: 'u_author',
+        genre: 'Tiên Hiệp',
+        status: 'Đang ra',
+        gradient: 'linear-gradient(135deg,#1e3a8a,#4338ca)',
+        coverData: '',
+        description: 'Từ một phế nhân nơi biên giới Vạn Kiếm, Lục Huyền bước chân vào con đường nghịch thiên tầm đạo giữa thời đại linh khí suy tàn.',
+        views: 2390,
+        ratings: [5, 4, 5, 5, 4],
+        comments: [],
+        chapters: [
+          { title: 'Chương 1: Đêm sương trên Vạn Kiếm Cốc', content: 'Gió núi rít qua vách đá dựng đứng, mang theo hơi lạnh thấu xương.\n\nLục Huyền mở mắt giữa đống tro tàn của linh trận cổ. Trong đan điền vốn trống rỗng bỗng vang lên một tiếng chuông trầm mặc, đánh thức mảnh kiếm cốt ngủ say vạn năm.' }
+        ]
+      },
+      {
+        id: 's3',
+        title: 'Án Mạng Trên Chuyến Tàu Đêm',
+        author: 'Hoàng Nam',
+        authorId: 'u_author',
+        genre: 'Trinh Thám',
+        status: 'Hoàn thành',
+        gradient: 'linear-gradient(135deg,#312e81,#7e22ce)',
+        coverData: '',
+        description: 'Chuyến tàu tốc hành xuyên đêm bị kẹt giữa đèo sương mù, và một bức thư nặc danh xuất hiện ngay trước khi chuông báo động reo lên.',
+        views: 1980,
+        ratings: [5, 5, 4],
+        comments: [],
+        chapters: [
+          { title: 'Chương 1: Toa số bảy trong sương mù', content: 'Hai giờ sáng, đoàn tàu bất ngờ giảm tốc độ rồi dừng hẳn giữa lưng chừng đèo.\n\nThanh tra Khải bước qua hành lang im ắng, nhận ra chiếc khuy áo trên thảm đỏ không thuộc về bất kỳ hành khách nào trên danh sách.' },
+          { title: 'Chương 2: Manh mối từ tấm vé cũ', content: 'Mỗi hành khách trên toa số bảy đều giữ một bí mật riêng, nhưng chỉ một người biết chính xác lý do đoàn tàu dừng lại.' }
+        ]
+      },
+      {
+        id: 's4',
+        title: 'Trạm Tín Hiệu Thứ Chín',
+        author: 'Hoàng Nam',
+        authorId: 'u_author',
+        genre: 'Khoa Huyễn',
+        status: 'Đang ra',
+        gradient: 'linear-gradient(135deg,#065f46,#0d9488)',
+        coverData: '',
+        description: 'Giữa vành đai tiểu hành tinh tĩnh lặng, kỹ sư vô tuyến An Nhiên thu được một chuỗi xung lặp lại chính xác từng mili-giây.',
+        views: 1150,
+        ratings: [4, 5, 4],
+        comments: [],
+        chapters: [
+          { title: 'Chương 1: Tiếng vang từ quỹ đạo xa', content: 'Màn hình quang phổ nhấp nháy vệt sáng xanh lục giữa không gian tối đen.\n\nAn Nhiên chỉnh lại tần số thu sóng. Tín hiệu không mang tính ngẫu nhiên — nó giống một lời chào được mã hóa từ một nền văn minh khác.' }
+        ]
+      }
+    ];
+
+    let state = {
+      stories: [],
+      users: [],
+      sessionUserId: null,
+      route: { page: 'home', storyId: null, chapIndex: 0, profileTab: 'favorites' },
+      filters: { q: '', genre: 'Tất cả', status: 'Tất cả', sort: 'views' },
+      readerPrefs: { fontSize: 18, fontFamily: 'serif', lineHeight: 1.85, theme: 'white', rate: 1.0 },
+      darkMode: false
+    };
+
+    let ttsUtterance = null;
+    let isSpeaking = false;
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function removeVietnameseTones(str) {
+      return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .toLowerCase();
+    }
+
+    function showToast(msg) {
+      const wrap = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.remove(); }, 3000);
+    }
+
+    function safeSave(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (err) {
+        showToast('Bộ nhớ trình duyệt đã đầy! Hãy xuất bản sao lưu JSON hoặc dùng ảnh nhẹ hơn.');
+        return false;
+      }
+    }
+
+    function loadData() {
+      try {
+        const rawStories = JSON.parse(localStorage.getItem(STORAGE_KEYS.stories) || 'null');
+        const rawUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.users) || 'null');
+        const rawSession = JSON.parse(localStorage.getItem(STORAGE_KEYS.session) || 'null');
+        const rawPrefs = JSON.parse(localStorage.getItem(STORAGE_KEYS.prefs) || 'null');
+
+        state.stories = Array.isArray(rawStories) && rawStories.length ? rawStories : structuredClone(DEFAULT_STORIES);
+        state.users = Array.isArray(rawUsers) && rawUsers.length ? rawUsers : structuredClone(DEFAULT_USERS);
+        state.sessionUserId = typeof rawSession === 'string' ? rawSession : null;
+
+        if (rawPrefs && typeof rawPrefs === 'object') {
+          state.darkMode = Boolean(rawPrefs.darkMode);
+          state.readerPrefs = { ...state.readerPrefs, ...(rawPrefs.readerPrefs || {}) };
+        }
+      } catch {
+        state.stories = structuredClone(DEFAULT_STORIES);
+        state.users = structuredClone(DEFAULT_USERS);
+        state.sessionUserId = null;
+      }
+      document.body.classList.toggle('dark-mode', state.darkMode);
+    }
+
+    function persistAll() {
+      safeSave(STORAGE_KEYS.stories, state.stories);
+      safeSave(STORAGE_KEYS.users, state.users);
+      safeSave(STORAGE_KEYS.session, state.sessionUserId);
+      safeSave(STORAGE_KEYS.prefs, { darkMode: state.darkMode, readerPrefs: state.readerPrefs });
+    }
+
+    function getCurrentUser() {
+      if (!state.sessionUserId) return null;
+      return state.users.find(u => u.id === state.sessionUserId) || null;
+    }
+
+    function stopSpeech() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      isSpeaking = false;
+      ttsUtterance = null;
+      const btn = document.getElementById('tts-btn');
+      if (btn) btn.textContent = '🔊 Đọc thành tiếng';
+    }
+
+    function navigate(page, extra = {}) {
+      stopSpeech();
+      closeAllDropdowns();
+      state.route = { ...state.route, page, ...extra };
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      render();
+    }
+
+    function openModal(id) {
+      closeAllDropdowns();
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('open');
+      if (!document.querySelector('.modal-backdrop.open')) {
+        document.body.style.overflow = '';
+      }
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-menu-wrap')) closeAllDropdowns();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.open').forEach(m => closeModal(m.id));
+        closeAllDropdowns();
+      }
+      const tag = document.activeElement?.tagName;
+      const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.activeElement?.isContentEditable;
+      if (!isTyping && state.route.page === 'reader') {
+        if (e.key === 'ArrowRight') nextChapter();
+        if (e.key === 'ArrowLeft') prevChapter();
+      }
+    });
+
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      document.body.classList.toggle('dark-mode', state.darkMode);
+      persistAll();
+      render();
+    }
+
+    function renderHeader() {
+      const user = getCurrentUser();
+      const authArea = document.getElementById('auth-area');
+      const themeBtn = `<button class="btn btn-ghost btn-sm" onclick="toggleDarkMode()" title="Đổi giao diện Sáng/Tối">${state.darkMode ? '☀️' : '🌙'}</button>`;
+
+      if (!user) {
+        authArea.innerHTML = `
+          ${themeBtn}
+          <button class="btn btn-ghost btn-sm" onclick="openAuthModal('login')">Đăng nhập</button>
+          <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Đăng ký</button>
+        `;
+        return;
+      }
+
+      const initial = escapeHtml((user.name || 'U').trim().charAt(0).toUpperCase());
+      authArea.innerHTML = `
+        ${themeBtn}
+        <div class="user-menu-wrap">
+          <button class="avatar-chip" onclick="toggleUserDropdown(event)">
+            <span class="avatar-circle" style="background:${escapeHtml(user.color || '#b45309')}">${initial}</span>
+            <span>${escapeHtml(user.name)}</span>
+            <span>▾</span>
+          </button>
+          <div class="dropdown-menu" id="user-dropdown">
+            <button class="dropdown-item" onclick="navigate('profile',{profileTab:'favorites'})">📚 Trang cá nhân &amp; Tủ truyện</button>
+            <button class="dropdown-item" onclick="navigate('profile',{profileTab:'studio'})">✍️ Author Studio</button>
+            <button class="dropdown-item" onclick="navigate('profile',{profileTab:'settings'})">⚙️ Cài đặt &amp; Sao lưu</button>
+            <button class="dropdown-item" style="color:var(--danger)" onclick="handleLogout()">🚪 Đăng xuất</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleUserDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('user-dropdown')?.classList.toggle('open');
+    }
+
+    function openAuthModal(tab = 'login') {
+      switchAuthTab(tab);
+      openModal('auth-modal');
+    }
+
+    function switchAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('login-form').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('register-form').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('tab-login').className = `btn ${isLogin ? 'btn-primary' : 'btn-ghost'} btn-sm`;
+      document.getElementById('tab-register').className = `btn ${!isLogin ? 'btn-primary' : 'btn-ghost'} btn-sm`;
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const idVal = document.getElementById('login-identifier').value.trim().toLowerCase();
+      const pwVal = document.getElementById('login-password').value;
+      const found = state.users.find(u =>
+        (u.email.toLowerCase() === idVal || u.name.toLowerCase() === idVal) && u.password === pwVal
+      );
+      if (!found) {
+        showToast('Thông tin đăng nhập chưa chính xác.');
+        return;
+      }
+      state.sessionUserId = found.id;
+      persistAll();
+      closeModal('auth-modal');
+      showToast(`Chào mừng ${found.name} quay trở lại!`);
+      render();
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
+      const password = document.getElementById('reg-password').value;
+
+      if (state.users.some(u => u.email.toLowerCase() === email)) {
+        showToast('Email này đã được đăng ký.');
+        return;
+      }
+      const colors = ['#b45309', '#0d9488', '#4338ca', '#be123c', '#15803d'];
+      const newUser = {
+        id: 'u_' + Date.now(),
+        name,
+        email,
+        password,
+        role: 'reader',
+        color: colors[state.users.length % colors.length],
+        favorites: [],
+        history: {},
+        bookmarks: []
+      };
+      state.users.push(newUser);
+      state.sessionUserId = newUser.id;
+      persistAll();
+      closeModal('auth-modal');
+      showToast(`Đăng ký thành công! Xin chào ${name}.`);
+      render();
+    }
+
+    function quickDemoLogin(type) {
+      const targetId = type === 'author' ? 'u_author' : 'u_reader';
+      const user = state.users.find(u => u.id === targetId) || state.users[0];
+      if (!user) return;
+      state.sessionUserId = user.id;
+      persistAll();
+      closeModal('auth-modal');
+      showToast(`Đã đăng nhập tài khoản mẫu: ${user.name}`);
+      render();
+    }
+
+    function handleLogout() {
+      state.sessionUserId = null;
+      persistAll();
+      closeAllDropdowns();
+      showToast('Đã đăng xuất khỏi tài khoản.');
+      render();
+    }
+
+    function getAvgRating(story) {
+      const list = Array.isArray(story.ratings) ? story.ratings : [];
+      if (!list.length) return '0.0';
+      const sum = list.reduce((a, b) => a + Number(b || 0), 0);
+      return (sum / list.length).toFixed(1);
+    }
+
+    function toggleFavorite(storyId, e) {
+      if (e) e.stopPropagation();
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Vui lòng đăng nhập để lưu tủ truyện.');
+        openAuthModal('login');
+        return;
+      }
+      user.favorites = Array.isArray(user.favorites) ? user.favorites : [];
+      const idx = user.favorites.indexOf(storyId);
+      if (idx >= 0) {
+        user.favorites.splice(idx, 1);
+        showToast('Đã xóa khỏi tủ truyện yêu thích.');
+      } else {
+        user.favorites.push(storyId);
+        showToast('Đã thêm vào tủ truyện yêu thích!');
+      }
+      persistAll();
+      render();
+    }
+
+    function getFilteredStories() {
+      const qRaw = (state.filters.q || '').trim();
+      const qNorm = removeVietnameseTones(qRaw);
+      const genre = state.filters.genre;
+      const status = state.filters.status;
+      const sort = state.filters.sort;
+
+      let list = state.stories.filter(s => {
+        const matchGenre = genre === 'Tất cả' || s.genre === genre;
+        const matchStatus = status === 'Tất cả' || s.status === status;
+        const hayRaw = `${s.title} ${s.author} ${s.genre}`.toLowerCase();
+        const hayNorm = removeVietnameseTones(`${s.title} ${s.author} ${s.genre}`);
+        const matchQ = !qNorm || hayRaw.includes(qRaw.toLowerCase()) || hayNorm.includes(qNorm);
+        return matchGenre && matchStatus && matchQ;
+      });
+
+      if (sort === 'views') list.sort((a, b) => (b.views || 0) - (a.views || 0));
+      else if (sort === 'rating') list.sort((a, b) => parseFloat(getAvgRating(b)) - parseFloat(getAvgRating(a)));
+      else if (sort === 'chapters') list.sort((a, b) => (b.chapters?.length || 0) - (a.chapters?.length || 0));
+
+      return list;
+    }
+
+    function renderCoverStyle(story) {
+      if (story.coverData) {
+        return `background-image:url('${escapeHtml(story.coverData)}');`;
+      }
+      return `background:${escapeHtml(story.gradient || 'linear-gradient(135deg,#78350f,#d97706)')};`;
+    }
+
+    function renderHome() {
+      const spotlight = [...state.stories].sort((a, b) => (b.views || 0) - (a.views || 0))[0] || state.stories[0];
+      const top5 = [...state.stories].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+      const filtered = getFilteredStories();
+      const user = getCurrentUser();
+      const favs = user?.favorites || [];
+
+      const genres = ['Tất cả', 'Tiên Hiệp', 'Ngôn Tình', 'Trinh Thám', 'Kinh Dị', 'Khoa Huyễn', 'Đời Thường'];
+
+      return `
+        ${spotlight ? `
+          <section class="hero">
+            <div>
+              <span class="hero-badge">✦ TIÊU ĐIỂM TUẦN NÀY</span>
+              <h1>${escapeHtml(spotlight.title)}</h1>
+              <p>${escapeHtml(spotlight.description)}</p>
+              <div style="display:flex;gap:0.65rem;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="openReader('${escapeHtml(spotlight.id)}', 0)">Đọc ngay</button>
+                <button class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.1)" onclick="navigate('detail',{storyId:'${escapeHtml(spotlight.id)}'})">Chi tiết &amp; Mục lục</button>
+              </div>
+            </div>
+            <div class="hero-card">
+              <div style="font-size:0.78rem;color:#fde68a;font-weight:700;margin-bottom:0.35rem;">TÁC GIẢ: ${escapeHtml(spotlight.author).toUpperCase()}</div>
+              <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.5rem;">${escapeHtml(spotlight.genre)} · ${escapeHtml(spotlight.status)}</div>
+              <div style="display:flex;gap:1rem;font-size:0.85rem;color:#e7e5e4;">
+                <span>👁 ${Number(spotlight.views || 0).toLocaleString('vi-VN')} lượt đọc</span>
+                <span>★ ${getAvgRating(spotlight)} (${spotlight.ratings?.length || 0})</span>
+                <span>📖 ${spotlight.chapters?.length || 0} chương</span>
+              </div>
+            </div>
+          </section>
+        ` : ''}
+
+        <div class="filter-panel">
+          <div class="search-wrap">
+            <input type="text" class="input-control" placeholder="Tìm tên truyện, tác giả (hỗ trợ không dấu)..."
+              value="${escapeHtml(state.filters.q)}" oninput="state.filters.q=this.value; render();" />
+          </div>
+          <select class="select-control" onchange="state.filters.genre=this.value; render();">
+            ${genres.map(g => `<option ${state.filters.genre === g ? 'selected' : ''}>${escapeHtml(g)}</option>`).join('')}
+          </select>
+          <select class="select-control" onchange="state.filters.status=this.value; render();">
+            <option value="Tất cả" ${state.filters.status === 'Tất cả' ? 'selected' : ''}>Mọi trạng thái</option>
+            <option value="Đang ra" ${state.filters.status === 'Đang ra' ? 'selected' : ''}>Đang ra</option>
+            <option value="Hoàn thành" ${state.filters.status === 'Hoàn thành' ? 'selected' : ''}>Hoàn thành</option>
+          </select>
+          <select class="select-control" onchange="state.filters.sort=this.value; render();">
+            <option value="views" ${state.filters.sort === 'views' ? 'selected' : ''}>Lượt đọc cao nhất</option>
+            <option value="rating" ${state.filters.sort === 'rating' ? 'selected' : ''}>Điểm sao cao nhất</option>
+            <option value="chapters" ${state.filters.sort === 'chapters' ? 'selected' : ''}>Nhiều chương nhất</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="resetFilters()">Đặt lại</button>
+        </div>
+
+        <div class="home-grid">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;">
+              <h2 style="font-size:1.15rem;">Danh sách tác phẩm (${filtered.length})</h2>
+            </div>
+            ${filtered.length ? `
+              <div class="story-grid">
+                ${filtered.map(s => {
+                  const isFav = favs.includes(s.id);
+                  return `
+                    <article class="story-card">
+                      <div class="cover-box" style="${renderCoverStyle(s)}" onclick="navigate('detail',{storyId:'${escapeHtml(s.id)}'})">
+                        <button class="bookmark-quick ${isFav ? 'active' : ''}" title="${isFav ? 'Bỏ lưu tủ truyện' : 'Lưu vào tủ truyện'}" onclick="toggleFavorite('${escapeHtml(s.id)}', event)">
+                          ${isFav ? '♥' : '♡'}
+                        </button>
+                        <div class="cover-content">
+                          <span class="pill" style="margin-bottom:0.3rem;">${escapeHtml(s.genre)}</span>
+                          <div style="font-size:0.78rem;opacity:0.9;">${s.chapters?.length || 0} chương</div>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="card-title" onclick="navigate('detail',{storyId:'${escapeHtml(s.id)}'})">${escapeHtml(s.title)}</div>
+                        <div class="card-meta">
+                          <span>✍️ ${escapeHtml(s.author)}</span>
+                          <span class="pill ${s.status === 'Hoàn thành' ? 'pill-status' : 'pill-ongoing'}">${escapeHtml(s.status)}</span>
+                        </div>
+                        <p class="card-desc">${escapeHtml(s.description)}</p>
+                        <div class="card-foot">
+                          <span>★ ${getAvgRating(s)}</span>
+                          <span>👁 ${Number(s.views || 0).toLocaleString('vi-VN')}</span>
+                        </div>
+                      </div>
+                    </article>
+                  `;
+                }).join('')}
+              </div>
+            ` : `
+              <div class="panel" style="text-align:center;padding:2.5rem 1rem;">
+                <p style="color:var(--muted);margin-bottom:0.85rem;">Không tìm thấy tác phẩm nào khớp với bộ lọc hiện tại.</p>
+                <button class="btn btn-primary btn-sm" onclick="resetFilters()">Xóa bộ lọc</button>
+              </div>
+            `}
+          </div>
+
+          <aside class="panel">
+            <div class="panel-title">
+              <span>🏆 Top 5 Thịnh Hành</span>
+            </div>
+            ${top5.map((s, idx) => `
+              <div class="rank-item" onclick="navigate('detail',{storyId:'${escapeHtml(s.id)}'})">
+                <div class="rank-num ${idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : ''}">${idx + 1}</div>
+                <div style="min-width:0;flex:1;">
+                  <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(s.title)}</div>
+                  <div style="font-size:0.76rem;color:var(--muted);">👁 ${Number(s.views || 0).toLocaleString('vi-VN')} · ★ ${getAvgRating(s)}</div>
+                </div>
+              </div>
+            `).join('')}
+          </aside>
+        </div>
+      `;
+    }
+
+    function resetFilters() {
+      state.filters = { q: '', genre: 'Tất cả', status: 'Tất cả', sort: 'views' };
+      render();
+    }
+
+    function renderDetail() {
+      const story = state.stories.find(s => s.id === state.route.storyId);
+      if (!story) {
+        return `<div class="panel"><p>Không tìm thấy tác phẩm.</p><button class="btn btn-primary btn-sm" style="margin-top:0.75rem" onclick="navigate('home')">Về trang chủ</button></div>`;
+      }
+      const user = getCurrentUser();
+      const isFav = Boolean(user?.favorites?.includes(story.id));
+      const hist = user?.history?.[story.id];
+      const isOwner = Boolean(user && story.authorId === user.id);
+      const related = state.stories.filter(s => s.id !== story.id && s.genre === story.genre).slice(0, 3);
+
+      return `
+        <div style="margin-bottom:1rem;">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('home')">← Quay lại danh sách</button>
+        </div>
+
+        <section class="detail-header">
+          <div class="detail-cover" style="${renderCoverStyle(story)}">
+            <span>${escapeHtml(story.genre)}</span>
+          </div>
+          <div>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.4rem;">
+              <span class="pill ${story.status === 'Hoàn thành' ? 'pill-status' : 'pill-ongoing'}">${escapeHtml(story.status)}</span>
+              <span style="font-size:0.86rem;color:var(--muted);">Tác giả: <strong>${escapeHtml(story.author)}</strong></span>
+            </div>
+            <h1 style="font-size:1.65rem;line-height:1.25;margin-bottom:0.5rem;">${escapeHtml(story.title)}</h1>
+            <p style="color:var(--muted);font-size:0.93rem;">${escapeHtml(story.description)}</p>
+
+            <div class="stats-row">
+              <div class="stat-box">★ <strong>${getAvgRating(story)}</strong> (${story.ratings?.length || 0} đánh giá)</div>
+              <div class="stat-box">📖 <strong>${story.chapters?.length || 0}</strong> chương</div>
+              <div class="stat-box">👁 <strong>${Number(story.views || 0).toLocaleString('vi-VN')}</strong> lượt đọc</div>
+            </div>
+
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.85rem;">
+              ${story.chapters?.length ? `
+                <button class="btn btn-primary" onclick="openReader('${escapeHtml(story.id)}', 0)">Đọc từ đầu</button>
+                ${hist ? `<button class="btn btn-ghost" onclick="openReader('${escapeHtml(story.id)}', ${Number(hist.chapIndex || 0)})">Tiếp tục chương ${Number(hist.chapIndex || 0) + 1}</button>` : ''}
+              ` : ''}
+              <button class="btn btn-ghost" onclick="toggleFavorite('${escapeHtml(story.id)}')">${isFav ? '♥ Đã lưu tủ truyện' : '♡ Lưu tủ truyện'}</button>
+              ${isOwner ? `<button class="btn btn-ghost" onclick="openChapterModal('${escapeHtml(story.id)}', -1)">+ Thêm chương</button>` : ''}
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" style="margin-bottom:1.5rem;">
+          <h2 style="font-size:1.1rem;margin-bottom:0.5rem;">Mục lục chương</h2>
+          ${story.chapters?.length ? `
+            <div class="chapter-list">
+              ${story.chapters.map((ch, i) => `
+                <button class="chapter-btn ${hist && hist.chapIndex >= i ? 'read' : ''}" onclick="openReader('${escapeHtml(story.id)}', ${i})">
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(ch.title)}</span>
+                  <span style="font-size:0.75rem;color:var(--muted);">Đọc →</span>
+                </button>
+              `).join('')}
+            </div>
+          ` : `<p style="color:var(--muted);font-size:0.9rem;">Tác phẩm chưa có chương nào.</p>`}
+        </section>
+
+        <section class="panel" style="margin-bottom:1.5rem;">
+          <h2 style="font-size:1.1rem;margin-bottom:0.75rem;">Đánh giá &amp; Bình luận (${story.comments?.length || 0})</h2>
+          <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.9rem;flex-wrap:wrap;">
+            <span style="font-size:0.86rem;color:var(--muted);margin-right:0.25rem;">Chấm điểm:</span>
+            ${[1,2,3,4,5].map(star => `
+              <button class="btn btn-ghost btn-sm" onclick="rateStory('${escapeHtml(story.id)}', ${star})">${star} ★</button>
+            `).join('')}
+          </div>
+
+          <form onsubmit="addComment(event, '${escapeHtml(story.id)}')" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+            <input type="text" id="comment-input" class="input-control" required placeholder="Chia sẻ cảm nhận của bạn về truyện..." />
+            <button type="submit" class="btn btn-primary btn-sm">Gửi</button>
+          </form>
+
+          <div style="display:flex;flex-direction:column;gap:0.65rem;">
+            ${(story.comments || []).length ? story.comments.map(c => `
+              <div style="padding:0.75rem;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+                  <strong style="font-size:0.86rem;color:${escapeHtml(c.userColor || 'var(--accent)')}">${escapeHtml(c.userName)}</strong>
+                  <span style="font-size:0.75rem;color:var(--muted);">${escapeHtml(c.createdAt || '')}</span>
+                </div>
+                <p style="font-size:0.88rem;">${escapeHtml(c.text)}</p>
+              </div>
+            `).join('') : `<p style="color:var(--muted);font-size:0.86rem;">Chưa có bình luận nào. Hãy là người đầu tiên!</p>`}
+          </div>
+        </section>
+
+        ${related.length ? `
+          <section>
+            <h2 style="font-size:1.1rem;margin-bottom:0.85rem;">Có thể bạn cũng thích (${escapeHtml(story.genre)})</h2>
+            <div class="story-grid">
+              ${related.map(r => `
+                <article class="story-card" onclick="navigate('detail',{storyId:'${escapeHtml(r.id)}'})">
+                  <div class="cover-box" style="${renderCoverStyle(r)}">
+                    <div class="cover-content"><span class="pill">${escapeHtml(r.genre)}</span></div>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-title">${escapeHtml(r.title)}</div>
+                    <div class="card-meta"><span>✍️ ${escapeHtml(r.author)}</span><span>★ ${getAvgRating(r)}</span></div>
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+        ` : ''}
+      `;
+    }
+
+    function rateStory(storyId, star) {
+      const story = state.stories.find(s => s.id === storyId);
+      if (!story) return;
+      story.ratings = Array.isArray(story.ratings) ? story.ratings : [];
+      story.ratings.push(star);
+      persistAll();
+      showToast(`Bạn đã đánh giá ${star} sao cho "${story.title}"!`);
+      render();
+    }
+
+    function addComment(e, storyId) {
+      e.preventDefault();
+      const input = document.getElementById('comment-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const story = state.stories.find(s => s.id === storyId);
+      if (!story) return;
+      const user = getCurrentUser();
+      story.comments = Array.isArray(story.comments) ? story.comments : [];
+      story.comments.unshift({
+        id: 'c_' + Date.now(),
+        userName: user ? user.name : 'Độc giả ẩn danh',
+        userColor: user ? user.color : '#57534e',
+        text,
+        createdAt: 'Vừa xong'
+      });
+      input.value = '';
+      persistAll();
+      showToast('Đã đăng bình luận!');
+      render();
+    }
+
+    function openReader(storyId, chapIndex = 0) {
+      const story = state.stories.find(s => s.id === storyId);
+      if (!story || !story.chapters?.length) {
+        showToast('Truyện hiện chưa có chương để đọc.');
+        return;
+      }
+      const safeIdx = Math.max(0, Math.min(Number(chapIndex || 0), story.chapters.length - 1));
+      story.views = Number(story.views || 0) + 1;
+
+      const user = getCurrentUser();
+      if (user) {
+        user.history = user.history || {};
+        user.history[story.id] = { chapIndex: safeIdx, updatedAt: new Date().toLocaleDateString('vi-VN') };
+      }
+      persistAll();
+      navigate('reader', { storyId: story.id, chapIndex: safeIdx });
+    }
+
+    function prevChapter() {
+      const story = state.stories.find(s => s.id === state.route.storyId);
+      if (!story) return;
+      if (state.route.chapIndex > 0) {
+        openReader(story.id, state.route.chapIndex - 1);
+      } else {
+        showToast('Đây là chương đầu tiên.');
+      }
+    }
+
+    function nextChapter() {
+      const story = state.stories.find(s => s.id === state.route.storyId);
+      if (!story) return;
+      if (state.route.chapIndex < story.chapters.length - 1) {
+        openReader(story.id, state.route.chapIndex + 1);
+      } else {
+        showToast('Bạn đã đọc đến chương mới nhất!');
+      }
+    }
+
+    function toggleSpeech(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Trình duyệt của bạn không hỗ trợ đọc thành tiếng.');
+        return;
+      }
+      if (isSpeaking) {
+        stopSpeech();
+        return;
+      }
+      stopSpeech();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'vi-VN';
+      utter.rate = state.readerPrefs.rate || 1.0;
+      utter.onend = () => stopSpeech();
+      utter.onerror = () => stopSpeech();
+      ttsUtterance = utter;
+      isSpeaking = true;
+      const btn = document.getElementById('tts-btn');
+      if (btn) btn.textContent = '⏹ Dừng đọc';
+      window.speechSynthesis.speak(utter);
+    }
+
+    function saveBookmark(storyId, chapIndex, chapTitle) {
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Vui lòng đăng nhập để lưu dấu trang.');
+        openAuthModal('login');
+        return;
+      }
+      user.bookmarks = Array.isArray(user.bookmarks) ? user.bookmarks : [];
+      const story = state.stories.find(s => s.id === storyId);
+      user.bookmarks.unshift({
+        id: 'bm_' + Date.now(),
+        storyId,
+        storyTitle: story?.title || '',
+        chapIndex,
+        chapTitle,
+        savedAt: new Date().toLocaleString('vi-VN')
+      });
+      persistAll();
+      showToast('Đã lưu dấu trang chương hiện tại!');
+    }
+
+    function renderReader() {
+      const story = state.stories.find(s => s.id === state.route.storyId);
+      const chap = story?.chapters?.[state.route.chapIndex];
+      if (!story || !chap) {
+        return `<div class="panel"><p>Không tìm thấy nội dung chương.</p><button class="btn btn-primary btn-sm" onclick="navigate('home')">Về trang chủ</button></div>`;
+      }
+      const p = state.readerPrefs;
+      const paragraphs = String(chap.content || '')
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => `<p>${escapeHtml(line)}</p>`)
+        .join('');
+
+      return `
+        <div class="reader-toolbar">
+          <div style="display:flex;gap:0.45rem;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="navigate('detail',{storyId:'${escapeHtml(story.id)}'})">← Mục lục</button>
+            <button class="btn btn-ghost btn-sm" onclick="prevChapter()">‹ Chương trước</button>
+            <button class="btn btn-ghost btn-sm" onclick="nextChapter()">Chương sau ›</button>
+          </div>
+
+          <div style="display:flex;gap:0.45rem;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="state.readerPrefs.fontSize=Math.max(14,p.fontSize-2);persistAll();render();">A-</button>
+            <span style="font-size:0.8rem;font-weight:700;">${p.fontSize}px</span>
+            <button class="btn btn-ghost btn-sm" onclick="state.readerPrefs.fontSize=Math.min(28,p.fontSize+2);persistAll();render();">A+</button>
+
+            <select class="select-control" style="width:auto;padding:0.32rem 0.55rem;font-size:0.8rem;" onchange="state.readerPrefs.fontFamily=this.value;persistAll();render();">
+              <option value="serif" ${p.fontFamily === 'serif' ? 'selected' : ''}>Serif</option>
+              <option value="sans" ${p.fontFamily === 'sans' ? 'selected' : ''}>Sans</option>
+            </select>
+
+            <select class="select-control" style="width:auto;padding:0.32rem 0.55rem;font-size:0.8rem;" onchange="state.readerPrefs.theme=this.value;persistAll();render();">
+              <option value="white" ${p.theme === 'white' ? 'selected' : ''}>Trắng</option>
+              <option value="sepia" ${p.theme === 'sepia' ? 'selected' : ''}>Sepia</option>
+              <option value="dark" ${p.theme === 'dark' ? 'selected' : ''}>Tối</option>
+            </select>
+
+            <button id="tts-btn" class="btn btn-ghost btn-sm" onclick="toggleSpeech(${JSON.stringify(chap.title + '. ' + chap.content)})">🔊 Đọc thành tiếng</button>
+            <button class="btn btn-ghost btn-sm" onclick="saveBookmark('${escapeHtml(story.id)}', ${state.route.chapIndex}, ${JSON.stringify(chap.title)})">🔖 Lưu dấu trang</button>
+          </div>
+        </div>
+
+        <article class="reader-paper reader-bg-${escapeHtml(p.theme)}"
+          style="font-size:${p.fontSize}px;line-height:${p.lineHeight};font-family:${p.fontFamily === 'serif' ? "'Merriweather', Georgia, serif" : "'Be Vietnam Pro', sans-serif"};">
+          <div style="font-size:0.82rem;opacity:0.75;margin-bottom:0.35rem;">${escapeHtml(story.title)} — ${escapeHtml(story.author)}</div>
+          <h1 style="font-size:1.35em;margin-bottom:1.25rem;line-height:1.35;">${escapeHtml(chap.title)}</h1>
+          <div class="reader-content">${paragraphs}</div>
+
+          <div style="display:flex;justify-content:space-between;gap:0.75rem;margin-top:2.2rem;padding-top:1.2rem;border-top:1px solid rgba(128,128,128,0.25);">
+            <button class="btn btn-ghost btn-sm" onclick="prevChapter()">‹ Chương trước</button>
+            <button class="btn btn-primary btn-sm" onclick="nextChapter()">Chương sau ›</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderProfile() {
+      const user = getCurrentUser();
+      if (!user) {
+        return `
+          <div class="panel" style="text-align:center;padding:2.5rem 1rem;">
+            <h2 style="margin-bottom:0.5rem;">Bạn chưa đăng nhập</h2>
+            <p style="color:var(--muted);margin-bottom:1rem;">Đăng nhập để quản lý tủ truyện, dấu trang và tác phẩm của bạn.</p>
+            <button class="btn btn-primary" onclick="openAuthModal('login')">Đăng nhập ngay</button>
+          </div>
+        `;
+      }
+
+      const tab = state.route.profileTab || 'favorites';
+      const favStories = state.stories.filter(s => (user.favorites || []).includes(s.id));
+      const myStories = state.stories.filter(s => s.authorId === user.id);
+
+      return `
+        <div class="panel" style="margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+          <div style="display:flex;align-items:center;gap:0.85rem;">
+            <div class="avatar-circle" style="width:52px;height:52px;font-size:1.25rem;background:${escapeHtml(user.color || '#b45309')}">
+              ${escapeHtml((user.name || 'U').charAt(0).toUpperCase())}
+            </div>
+            <div>
+              <h1 style="font-size:1.3rem;">${escapeHtml(user.name)}</h1>
+              <div style="font-size:0.84rem;color:var(--muted);">${escapeHtml(user.email)} · ${favStories.length} truyện yêu thích · ${myStories.length} tác phẩm</div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openPublishModal()">+ Đăng truyện mới</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn ${tab === 'favorites' ? 'active' : ''}" onclick="navigate('profile',{profileTab:'favorites'})">Tủ truyện (${favStories.length})</button>
+          <button class="tab-btn ${tab === 'bookmarks' ? 'active' : ''}" onclick="navigate('profile',{profileTab:'bookmarks'})">Dấu trang (${user.bookmarks?.length || 0})</button>
+          <button class="tab-btn ${tab === 'studio' ? 'active' : ''}" onclick="navigate('profile',{profileTab:'studio'})">Author Studio (${myStories.length})</button>
+          <button class="tab-btn ${tab === 'settings' ? 'active' : ''}" onclick="navigate('profile',{profileTab:'settings'})">Sao lưu &amp; Khôi phục</button>
+        </div>
+
+        ${tab === 'favorites' ? `
+          ${favStories.length ? `
+            <div class="story-grid">
+              ${favStories.map(s => `
+                <article class="story-card">
+                  <div class="cover-box" style="${renderCoverStyle(s)}" onclick="navigate('detail',{storyId:'${escapeHtml(s.id)}'})">
+                    <div class="cover-content"><span class="pill">${escapeHtml(s.genre)}</span></div>
+                  </div>
+                  <div class="card-body">
+                    <div class="card-title" onclick="navigate('detail',{storyId:'${escapeHtml(s.id)}'})">${escapeHtml(s.title)}</div>
+                    <div class="card-meta"><span>✍️ ${escapeHtml(s.author)}</span><span>★ ${getAvgRating(s)}</span></div>
+                    <div style="display:flex;gap:0.4rem;margin-top:0.5rem;">
+                      <button class="btn btn-primary btn-sm" style="flex:1" onclick="openReader('${escapeHtml(s.id)}', 0)">Đọc ngay</button>
+                      <button class="btn btn-ghost btn-sm" onclick="toggleFavorite('${escapeHtml(s.id)}')">Bỏ lưu</button>
+                    </div>
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          ` : `<div class="panel"><p style="color:var(--muted);">Tủ truyện của bạn đang trống.</p></div>`}
+        ` : ''}
+
+        ${tab === 'bookmarks' ? `
+          <div class="panel">
+            ${(user.bookmarks || []).length ? user.bookmarks.map(bm => `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:0.7rem 0;border-bottom:1px solid var(--border);gap:0.75rem;flex-wrap:wrap;">
+                <div>
+                  <div style="font-weight:700;font-size:0.92rem;">${escapeHtml(bm.storyTitle)} — ${escapeHtml(bm.chapTitle)}</div>
+                  <div style="font-size:0.78rem;color:var(--muted);">Lưu lúc: ${escapeHtml(bm.savedAt)}</div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openReader('${escapeHtml(bm.storyId)}', ${Number(bm.chapIndex || 0)})">Mở chương</button>
+              </div>
+            `).join('') : `<p style="color:var(--muted);">Chưa có dấu trang nào được lưu.</p>`}
+          </div>
+        ` : ''}
+
+        ${tab === 'studio' ? `
+          <div style="display:flex;flex-direction:column;gap:0.85rem;">
+            ${myStories.length ? myStories.map(s => `
+              <div class="panel">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                  <div>
+                    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.25rem;">
+                      <h3 style="font-size:1.05rem;">${escapeHtml(s.title)}</h3>
+                      <span class="pill">${escapeHtml(s.genre)}</span>
+                      <span class="pill ${s.status === 'Hoàn thành' ? 'pill-status' : 'pill-ongoing'}">${escapeHtml(s.status)}</span>
+                    </div>
+                    <div style="font-size:0.82rem;color:var(--muted);">
+                      ${s.chapters?.length || 0} chương · 👁 ${Number(s.views || 0).toLocaleString('vi-VN')} lượt đọc · ★ ${getAvgRating(s)}
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:0.45rem;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="openChapterModal('${escapeHtml(s.id)}', -1)">+ Thêm chương</button>
+                    <button class="btn btn-ghost btn-sm" onclick="openEditStoryModal('${escapeHtml(s.id)}')">Sửa truyện</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteStory('${escapeHtml(s.id)}')">Xóa</button>
+                  </div>
+                </div>
+                ${s.chapters?.length ? `
+                  <div style="margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:0.4rem;">
+                    ${s.chapters.map((ch, idx) => `
+                      <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.84rem;background:var(--surface-2);padding:0.45rem 0.7rem;border-radius:8px;">
+                        <span>${escapeHtml(ch.title)}</span>
+                        <div style="display:flex;gap:0.4rem;">
+                          <button class="btn btn-ghost btn-sm" onclick="openChapterModal('${escapeHtml(s.id)}', ${idx})">Sửa</button>
+                          <button class="btn btn-danger btn-sm" onclick="deleteChapter('${escapeHtml(s.id)}', ${idx})">Xóa</button>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('') : `<div class="panel"><p style="color:var(--muted);">Bạn chưa đăng tác phẩm nào.</p></div>`}
+          </div>
+        ` : ''}
+
+        ${tab === 'settings' ? `
+          <div class="panel">
+            <h3 style="font-size:1rem;margin-bottom:0.5rem;">Sao lưu &amp; Khôi phục dữ liệu (.JSON)</h3>
+            <p style="font-size:0.86rem;color:var(--muted);margin-bottom:1rem;">Tải toàn bộ truyện và tài khoản về máy hoặc khôi phục từ tệp sao lưu.</p>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" onclick="exportBackupJson()">⬇ Tải bản sao lưu JSON</button>
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;">
+                ⬆ Khôi phục từ JSON
+                <input type="file" accept=".json,application/json" style="display:none;" onchange="importBackupJson(event)" />
+              </label>
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function openPublishModal() {
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Vui lòng đăng nhập để đăng truyện.');
+        openAuthModal('login');
+        return;
+      }
+      document.getElementById('story-modal-title').textContent = 'Đăng truyện mới';
+      document.getElementById('story-form').reset();
+      document.getElementById('edit-story-id').value = '';
+      document.getElementById('story-cover-data').value = '';
+      document.getElementById('first-chapter-group').style.display = 'block';
+      openModal('story-modal');
+    }
+
+    function openEditStoryModal(storyId) {
+      const user = getCurrentUser();
+      const story = state.stories.find(s => s.id === storyId);
+      if (!user || !story || story.authorId !== user.id) {
+        showToast('Bạn không có quyền chỉnh sửa tác phẩm này.');
+        return;
+      }
+      document.getElementById('story-modal-title').textContent = 'Chỉnh sửa tác phẩm';
+      document.getElementById('edit-story-id').value = story.id;
+      document.getElementById('story-title').value = story.title;
+      document.getElementById('story-genre').value = story.genre;
+      document.getElementById('story-status').value = story.status;
+      document.getElementById('story-gradient').value = story.gradient || 'linear-gradient(135deg,#78350f,#d97706)';
+      document.getElementById('story-cover-data').value = story.coverData || '';
+      document.getElementById('story-desc').value = story.description;
+      document.getElementById('first-chapter-group').style.display = 'none';
+      openModal('story-modal');
+    }
+
+    function handleCoverUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 600;
+          const scale = Math.min(1, maxW / img.width);
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          document.getElementById('story-cover-data').value = canvas.toDataURL('image/jpeg', 0.75);
+          showToast('Đã nén và đính kèm ảnh bìa.');
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleSaveStory(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      if (!user) return;
+
+      const editId = document.getElementById('edit-story-id').value;
+      const title = document.getElementById('story-title').value.trim();
+      const genre = document.getElementById('story-genre').value;
+      const status = document.getElementById('story-status').value;
+      const gradient = document.getElementById('story-gradient').value;
+      const coverData = document.getElementById('story-cover-data').value;
+      const description = document.getElementById('story-desc').value.trim();
+
+      if (editId) {
+        const story = state.stories.find(s => s.id === editId && s.authorId === user.id);
+        if (!story) return;
+        story.title = title;
+        story.genre = genre;
+        story.status = status;
+        story.gradient = gradient;
+        story.coverData = coverData;
+        story.description = description;
+        persistAll();
+        closeModal('story-modal');
+        showToast('Đã cập nhật tác phẩm!');
+        render();
+        return;
+      }
+
+      const chapTitle = document.getElementById('first-chapter-title').value.trim() || 'Chương 1: Mở đầu';
+      const chapContent = document.getElementById('first-chapter-content').value.trim();
+      const chapters = chapContent ? [{ title: chapTitle, content: chapContent }] : [];
+
+      const newStory = {
+        id: 's_' + Date.now(),
+        title,
+        author: user.name,
+        authorId: user.id,
+        genre,
+        status,
+        gradient,
+        coverData,
+        description,
+        views: 1,
+        ratings: [],
+        comments: [],
+        chapters
+      };
+      state.stories.unshift(newStory);
+      persistAll();
+      closeModal('story-modal');
+      showToast('Đã xuất bản tác phẩm mới!');
+      navigate('detail', { storyId: newStory.id });
+    }
+
+    function deleteStory(storyId) {
+      const user = getCurrentUser();
+      const idx = state.stories.findIndex(s => s.id === storyId && s.authorId === user?.id);
+      if (idx < 0) {
+        showToast('Bạn không có quyền xóa tác phẩm này.');
+        return;
+      }
+      if (!confirm('Bạn có chắc chắn muốn xóa tác phẩm này không?')) return;
+      state.stories.splice(idx, 1);
+      persistAll();
+      showToast('Đã xóa tác phẩm.');
+      render();
+    }
+
+    function openChapterModal(storyId, chapIndex = -1) {
+      const user = getCurrentUser();
+      const story = state.stories.find(s => s.id === storyId);
+      if (!user || !story || story.authorId !== user.id) {
+        showToast('Bạn không có quyền quản lý chương của truyện này.');
+        return;
+      }
+      document.getElementById('chap-story-id').value = storyId;
+      document.getElementById('chap-index').value = chapIndex;
+      if (chapIndex >= 0 && story.chapters[chapIndex]) {
+        document.getElementById('chapter-modal-title').textContent = 'Chỉnh sửa chương';
+        document.getElementById('chap-title').value = story.chapters[chapIndex].title;
+        document.getElementById('chap-content').value = story.chapters[chapIndex].content;
+      } else {
+        document.getElementById('chapter-modal-title').textContent = `Thêm chương mới (${story.title})`;
+        document.getElementById('chap-title').value = `Chương ${story.chapters.length + 1}: `;
+        document.getElementById('chap-content').value = '';
+      }
+      updateWordCounter();
+      openModal('chapter-modal');
+    }
+
+    function updateWordCounter() {
+      const txt = (document.getElementById('chap-content')?.value || '').trim();
+      const words = txt ? txt.split(/\s+/).length : 0;
+      const el = document.getElementById('chap-word-count');
+      if (el) el.textContent = `${words} từ`;
+    }
+
+    function handleSaveChapter(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      const storyId = document.getElementById('chap-story-id').value;
+      const chapIndex = Number(document.getElementById('chap-index').value);
+      const title = document.getElementById('chap-title').value.trim();
+      const content = document.getElementById('chap-content').value.trim();
+      const story = state.stories.find(s => s.id === storyId && s.authorId === user?.id);
+      if (!story) return;
+
+      if (chapIndex >= 0 && story.chapters[chapIndex]) {
+        story.chapters[chapIndex] = { title, content };
+        showToast('Đã cập nhật chương!');
+      } else {
+        story.chapters.push({ title, content });
+        showToast('Đã xuất bản chương mới!');
+      }
+      persistAll();
+      closeModal('chapter-modal');
+      render();
+    }
+
+    function deleteChapter(storyId, chapIndex) {
+      const user = getCurrentUser();
+      const story = state.stories.find(s => s.id === storyId && s.authorId === user?.id);
+      if (!story || !story.chapters[chapIndex]) return;
+      if (!confirm('Xóa chương này?')) return;
+      story.chapters.splice(chapIndex, 1);
+      persistAll();
+      showToast('Đã xóa chương.');
+      render();
+    }
+
+    function exportBackupJson() {
+      const payload = JSON.stringify({ stories: state.stories, users: state.users, exportedAt: new Date().toISOString() }, null, 2);
+      const blob = new Blob([payload], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'van-dan-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Đã tải tệp sao lưu van-dan-backup.json');
+    }
+
+    function importBackupJson(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (Array.isArray(data.stories)) state.stories = data.stories;
+          if (Array.isArray(data.users)) state.users = data.users;
+          persistAll();
+          showToast('Khôi phục dữ liệu thành công!');
+          render();
+        } catch {
+          showToast('Tệp JSON không hợp lệ.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function render() {
+      renderHeader();
+      const app = document.getElementById('app');
+      const progressWrap = document.getElementById('read-progress-wrap');
+
+      if (state.route.page === 'reader') {
+        progressWrap.style.display = 'block';
+        app.innerHTML = renderReader();
+      } else {
+        progressWrap.style.display = 'none';
+        if (state.route.page === 'detail') app.innerHTML = renderDetail();
+        else if (state.route.page === 'profile') app.innerHTML = renderProfile();
+        else app.innerHTML = renderHome();
+      }
+      updateScrollProgress();
+    }
+
+    function updateScrollProgress() {
+      const topBtn = document.getElementById('back-to-top');
+      if (topBtn) topBtn.style.display = window.scrollY > 320 ? 'block' : 'none';
+
+      if (state.route.page !== 'reader') return;
+      const bar = document.getElementById('read-progress-bar');
+      if (!bar) return;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100)) : 100;
+      bar.style.width = `${pct.toFixed(1)}%`;
+    }
+
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+    loadData();
+    render();
+  </script>
+</body>
+</html>
